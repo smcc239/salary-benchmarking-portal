@@ -2058,7 +2058,7 @@ const SalaryBenchmarkingPortal = () => {
         </div>
         
         {/* Enhanced metrics grid with real data */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
               <Users className="w-8 h-8 text-orange-600" />
@@ -2101,20 +2101,6 @@ const SalaryBenchmarkingPortal = () => {
             </p>
             <p className="text-gray-600 text-sm mt-2">
               {userSurveys.length > 0 ? 'Across your roles' : 'Complete surveys to see'}
-            </p>
-          </div>
-
-          <div className="bg-black p-6 rounded-xl border border-gray-800 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <Target className="w-8 h-8 text-orange-400" />
-              <div className="bg-orange-900 rounded-full p-2">
-                <Award className="w-4 h-4 text-orange-400" />
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold mb-1 text-white">Data Quality</h3>
-            <p className="text-3xl font-bold text-orange-400">{quickStats.dataQuality}%</p>
-            <p className="text-gray-300 text-sm mt-2">
-              {quickStats.totalSurveys > 10 ? 'Excellent' : 'Growing dataset'}
             </p>
           </div>
         </div>
