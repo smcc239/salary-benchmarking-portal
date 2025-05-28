@@ -1091,14 +1091,8 @@ const SalaryBenchmarkingPortal = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Award className="w-5 h-5" />
-                    <span>{roleSurveys.length > 0 ? `${roleSurveys.length} live surveys` : 'Industry baseline data'}</span>
+                    <span>{roleSurveys.length > 0 ? `${roleSurveys.length} surveys` : 'Industry baseline data'}</span>
                   </div>
-                  {roleSurveys.length > 0 && (
-                    <div className="flex items-center space-x-2 bg-orange-100 px-3 py-1 rounded-full">
-                      <CheckCircle className="w-4 h-4 text-orange-600" />
-                      <span className="text-orange-800 text-sm font-medium">Live Data</span>
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
@@ -1161,10 +1155,10 @@ const SalaryBenchmarkingPortal = () => {
                   <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="w-5 h-5 text-orange-600" />
-                      <span className="font-semibold text-orange-900">Live Survey Data</span>
+                      <span className="font-semibold text-orange-900">Survey Data</span>
                     </div>
                     <p className="text-orange-800 text-sm mt-1">
-                      This report includes {roleSurveys.length} real survey response{roleSurveys.length !== 1 ? 's' : ''} for {role} positions, 
+                      This report includes {roleSurveys.length} survey response{roleSurveys.length !== 1 ? 's' : ''} for {role} positions, 
                       providing current market insights specific to your sector.
                     </p>
                   </div>
@@ -1175,8 +1169,7 @@ const SalaryBenchmarkingPortal = () => {
                       <span className="font-semibold text-blue-900">Industry Baseline Data</span>
                     </div>
                     <p className="text-blue-800 text-sm mt-1">
-                      This report shows industry benchmark data. Complete the survey for this role to see live, 
-                      sector-specific salary insights mixed with your contributed data.
+                      This report shows industry benchmark data. Complete the survey for this role to see sector-specific salary insights.
                     </p>
                   </div>
                 )}
@@ -1185,7 +1178,7 @@ const SalaryBenchmarkingPortal = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                   <div className="bg-white p-6 rounded-xl border-l-4 border-orange-600 border border-gray-200">
                     <div className="flex items-center justify-between mb-3">
-                      <DollarSign className="w-8 h-8 text-orange-600" />
+                      <span className="text-2xl">£</span>
                       <TrendingUp className="w-5 h-5 text-green-500" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">Average Salary</h3>
@@ -1215,7 +1208,7 @@ const SalaryBenchmarkingPortal = () => {
 
                   <div className="bg-black p-6 rounded-xl border border-gray-200">
                     <div className="flex items-center justify-between mb-3">
-                      <Zap className="w-8 h-8 text-orange-400" />
+                      <span className="text-2xl text-orange-400">£</span>
                       <TrendingUp className="w-5 h-5 text-orange-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-white mb-1">Avg Bonus</h3>
@@ -2068,6 +2061,7 @@ const SalaryBenchmarkingPortal = () => {
     const [quickStats] = useState(() => getSystemStats());
     const userSurveys = getUserSurveys(currentUser?.id);
     const userOrgName = currentUser?.user_metadata?.organizationName || 'Your Organisation';
+    const userName = currentUser?.user_metadata?.full_name || currentUser?.name || 'User';
 
     return (
       <div className="p-6 space-y-8">
@@ -2076,7 +2070,7 @@ const SalaryBenchmarkingPortal = () => {
             <Logo className="h-10 w-auto" showText={false} />
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Welcome back, {currentUser?.user_metadata?.full_name?.split(' ')[0] || currentUser?.name?.split(' ')[0]}! 👋
+                Welcome back, {userName.split(' ')[0]}! 👋
               </h1>
               <p className="text-gray-600 text-lg">
                 {userOrgName} • Salary Benchmarking Overview
@@ -2639,6 +2633,316 @@ const SalaryBenchmarkingPortal = () => {
     );
   };
 
+  // Enhanced Profile Management Component
+  const Profile = () => {
+    const [profileData, setProfileData] = useState({
+      fullName: currentUser?.user_metadata?.full_name || '',
+      jobTitle: currentUser?.user_metadata?.job_title || '',
+      organizationName: currentUser?.user_metadata?.organizationName || '',
+      organizationType: currentUser?.user_metadata?.organizationType || '',
+      organizationSize: currentUser?.user_metadata?.organizationSize || '',
+      organizationLocation: currentUser?.user_metadata?.organizationLocation || '',
+      email: currentUser?.email || '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [activeTab, setActiveTab] = useState('personal');
+
+    const handleProfileUpdate = async () => {
+      setLoading(true);
+      setMessage(null);
+
+      try {
+        const { data, error } = await supabase.auth.updateUser({
+          data: {
+            full_name: profileData.fullName,
+            job_title: profileData.jobTitle,
+            organizationName: profileData.organizationName,
+            organizationType: profileData.organizationType,
+            organizationSize: profileData.organizationSize,
+            organizationLocation: profileData.organizationLocation
+          }
+        });
+
+        if (error) throw error;
+
+        // Update local state
+        setCurrentUser(prev => ({
+          ...prev,
+          user_metadata: {
+            ...prev.user_metadata,
+            full_name: profileData.fullName,
+            job_title: profileData.jobTitle,
+            organizationName: profileData.organizationName,
+            organizationType: profileData.organizationType,
+            organizationSize: profileData.organizationSize,
+            organizationLocation: profileData.organizationLocation
+          }
+        }));
+
+        setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      } catch (error) {
+        setMessage({ type: 'error', text: error.message });
+      }
+
+      setLoading(false);
+    };
+
+    const handlePasswordUpdate = async () => {
+      if (profileData.newPassword !== profileData.confirmPassword) {
+        setMessage({ type: 'error', text: 'New passwords do not match' });
+        return;
+      }
+
+      setLoading(true);
+      setMessage(null);
+
+      try {
+        const { error } = await supabase.auth.updateUser({
+          password: profileData.newPassword
+        });
+
+        if (error) throw error;
+
+        // Clear password fields
+        setProfileData(prev => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }));
+
+        setMessage({ type: 'success', text: 'Password updated successfully!' });
+      } catch (error) {
+        setMessage({ type: 'error', text: error.message });
+      }
+
+      setLoading(false);
+    };
+
+    const renderPersonalInfo = () => (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name *
+            </label>
+            <input
+              type="text"
+              value={profileData.fullName}
+              onChange={(e) => setProfileData(prev => ({ ...prev, fullName: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="John Smith"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Job Title
+            </label>
+            <input
+              type="text"
+              value={profileData.jobTitle}
+              onChange={(e) => setProfileData(prev => ({ ...prev, jobTitle: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="HR Director"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organisation Name *
+            </label>
+            <input
+              type="text"
+              value={profileData.organizationName}
+              onChange={(e) => setProfileData(prev => ({ ...prev, organizationName: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="Your Organisation"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organisation Type
+            </label>
+            <select
+              value={profileData.organizationType}
+              onChange={(e) => setProfileData(prev => ({ ...prev, organizationType: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            >
+              <option value="">Select type</option>
+              {organizationTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organisation Size
+            </label>
+            <select
+              value={profileData.organizationSize}
+              onChange={(e) => setProfileData(prev => ({ ...prev, organizationSize: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            >
+              <option value="">Select size</option>
+              {organizationSizes.map(size => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organisation Location
+            </label>
+            <input
+              type="text"
+              value={profileData.organizationLocation}
+              onChange={(e) => setProfileData(prev => ({ ...prev, organizationLocation: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="London, UK"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
+          <input
+            type="email"
+            value={profileData.email}
+            disabled
+            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50"
+          />
+          <p className="text-sm text-gray-500 mt-1">Email address cannot be changed</p>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={handleProfileUpdate}
+            disabled={loading}
+            className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all disabled:opacity-50"
+          >
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </div>
+    );
+
+    const renderSecuritySettings = () => (
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Current Password
+          </label>
+          <input
+            type="password"
+            value={profileData.currentPassword}
+            onChange={(e) => setProfileData(prev => ({ ...prev, currentPassword: e.target.value }))}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            placeholder="Enter current password"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            New Password
+          </label>
+          <input
+            type="password"
+            value={profileData.newPassword}
+            onChange={(e) => setProfileData(prev => ({ ...prev, newPassword: e.target.value }))}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            placeholder="Enter new password"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Confirm New Password
+          </label>
+          <input
+            type="password"
+            value={profileData.confirmPassword}
+            onChange={(e) => setProfileData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            placeholder="Confirm new password"
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={handlePasswordUpdate}
+            disabled={loading}
+            className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all disabled:opacity-50"
+          >
+            {loading ? 'Updating...' : 'Update Password'}
+          </button>
+        </div>
+      </div>
+    );
+
+    return (
+      <div className="p-6 space-y-8">
+        <div className="flex items-center space-x-4">
+          <Logo className="h-10 w-auto" showText={false} />
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <p className="text-gray-600 text-lg">Manage your account settings and preferences</p>
+          </div>
+        </div>
+
+        {message && (
+          <div className={`p-4 rounded-lg ${
+            message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+          }`}>
+            {message.text}
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="border-b border-gray-200">
+            <nav className="flex">
+              <button
+                onClick={() => setActiveTab('personal')}
+                className={`px-6 py-4 text-sm font-medium border-b-2 ${
+                  activeTab === 'personal'
+                    ? 'border-orange-500 text-orange-600'
+                    : 'border-transparent text-gray-500 hover:text-orange-600 hover:border-orange-300'
+                }`}
+              >
+                Personal Information
+              </button>
+              <button
+                onClick={() => setActiveTab('security')}
+                className={`px-6 py-4 text-sm font-medium border-b-2 ${
+                  activeTab === 'security'
+                    ? 'border-orange-500 text-orange-600'
+                    : 'border-transparent text-gray-500 hover:text-orange-600 hover:border-orange-300'
+                }`}
+              >
+                Security Settings
+              </button>
+            </nav>
+          </div>
+
+          <div className="p-8">
+            {activeTab === 'personal' ? renderPersonalInfo() : renderSecuritySettings()}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Main layout and routing
   if (!currentUser) {
     return <LoginForm />;
@@ -2657,7 +2961,7 @@ const SalaryBenchmarkingPortal = () => {
       case 'report':
         return <SalaryReport role={selectedRole} />;
       case 'profile':
-        return <Dashboard />; // Use dashboard for now
+        return <Profile />;
       case 'admin':
         return currentUser.role === 'admin' ? <AdminPanel /> : <Dashboard />;
       default:
