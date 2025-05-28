@@ -1597,6 +1597,34 @@ const SalaryBenchmarkingPortal = () => {
 
     const renderRegistrationForm = () => (
       <div className="space-y-6">
+        {/* Account credentials */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="your@email.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password *
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="Create a password"
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1627,19 +1655,19 @@ const SalaryBenchmarkingPortal = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Organization Name *
+              Organisation Name *
             </label>
             <input
               type="text"
               value={registrationData.organizationName}
               onChange={(e) => setRegistrationData(prev => ({ ...prev, organizationName: e.target.value }))}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-              placeholder="Your Organization"
+              placeholder="Your Organisation"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Organization Type *
+              Organisation Type *
             </label>
             <select
               value={registrationData.organizationType}
@@ -1657,7 +1685,7 @@ const SalaryBenchmarkingPortal = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Organization Size
+              Organisation Size
             </label>
             <select
               value={registrationData.organizationSize}
@@ -1672,7 +1700,7 @@ const SalaryBenchmarkingPortal = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Organization Location
+              Organisation Location
             </label>
             <input
               type="text"
