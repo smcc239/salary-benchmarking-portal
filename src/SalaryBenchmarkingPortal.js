@@ -1443,6 +1443,69 @@ const SalaryBenchmarkingPortal = () => {
     const [isRegistering, setIsRegistering] = useState(false);
     const [formLoading, setFormLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    
+    // Registration form state
+    const [registrationData, setRegistrationData] = useState({
+      fullName: '',
+      jobTitle: '',
+      organizationName: '',
+      organizationType: '',
+      organizationSize: '',
+      organizationLocation: '',
+      sectorExperience: '',
+      primaryInterest: '',
+      referralSource: '',
+      termsAccepted: false,
+      privacyAccepted: false,
+      dataProcessingAccepted: false,
+      marketingAccepted: false
+    });
+
+    const organizationTypes = [
+      'Charity',
+      'Social Enterprise',
+      'CIC',
+      'Housing Association',
+      'Foundation',
+      'Community Group',
+      'Other'
+    ];
+
+    const organizationSizes = [
+      '1-10 employees',
+      '11-50 employees',
+      '51-100 employees',
+      '101-500 employees',
+      '500-1000 employees',
+      '1000+ employees'
+    ];
+
+    const sectorExperience = [
+      'Less than 1 year',
+      '1-3 years',
+      '4-7 years',
+      '8-12 years',
+      '13-20 years',
+      '20+ years'
+    ];
+
+    const primaryInterests = [
+      'Salary Benchmarking',
+      'Compensation Strategy',
+      'Market Research',
+      'HR Planning',
+      'Recruitment',
+      'Other'
+    ];
+
+    const referralSources = [
+      'Search Engine',
+      'Social Media',
+      'Colleague Referral',
+      'Industry Event',
+      'Newsletter',
+      'Other'
+    ];
 
     // Registration handler
     const handleRegister = async () => {
@@ -1450,6 +1513,29 @@ const SalaryBenchmarkingPortal = () => {
         setMessage({ type: 'error', text: 'Please enter both email and password.' });
         return;
       }
+
+      // Validate required fields
+      const requiredFields = {
+        fullName: 'Full Name',
+        organizationName: 'Organization Name',
+        organizationType: 'Organization Type',
+        termsAccepted: 'Terms & Conditions',
+        privacyAccepted: 'Privacy Policy',
+        dataProcessingAccepted: 'Data Processing Consent'
+      };
+
+      const missingFields = Object.entries(requiredFields)
+        .filter(([key]) => !registrationData[key])
+        .map(([_, label]) => label);
+
+      if (missingFields.length > 0) {
+        setMessage({ 
+          type: 'error', 
+          text: `Please complete all required fields: ${missingFields.join(', ')}` 
+        });
+        return;
+      }
+
       setFormLoading(true);
       setMessage(null);
       try {
@@ -1458,16 +1544,35 @@ const SalaryBenchmarkingPortal = () => {
           password,
           options: {
             data: {
-              full_name: email.split('@')[0],
-              role: 'user'
+              ...registrationData,
+              role: 'user',
+              registration_date: new Date().toISOString()
             }
           }
         });
         if (error) throw error;
-        setMessage({ type: 'success', text: 'Account created! Please check your email to verify your account, then log in.' });
+        setMessage({ 
+          type: 'success', 
+          text: 'Account created! Please check your email to verify your account, then log in.' 
+        });
         setIsRegistering(false);
         setEmail('');
         setPassword('');
+        setRegistrationData({
+          fullName: '',
+          jobTitle: '',
+          organizationName: '',
+          organizationType: '',
+          organizationSize: '',
+          organizationLocation: '',
+          sectorExperience: '',
+          primaryInterest: '',
+          referralSource: '',
+          termsAccepted: false,
+          privacyAccepted: false,
+          dataProcessingAccepted: false,
+          marketingAccepted: false
+        });
       } catch (error) {
         setMessage({ type: 'error', text: error.message });
       }
@@ -1490,14 +1595,217 @@ const SalaryBenchmarkingPortal = () => {
       setFormLoading(false);
     };
 
+    const renderRegistrationForm = () => (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name *
+            </label>
+            <input
+              type="text"
+              value={registrationData.fullName}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, fullName: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="John Smith"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Job Title
+            </label>
+            <input
+              type="text"
+              value={registrationData.jobTitle}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, jobTitle: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="HR Director"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organization Name *
+            </label>
+            <input
+              type="text"
+              value={registrationData.organizationName}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, organizationName: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="Your Organization"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organization Type *
+            </label>
+            <select
+              value={registrationData.organizationType}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, organizationType: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            >
+              <option value="">Select type</option>
+              {organizationTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organization Size
+            </label>
+            <select
+              value={registrationData.organizationSize}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, organizationSize: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            >
+              <option value="">Select size</option>
+              {organizationSizes.map(size => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Organization Location
+            </label>
+            <input
+              type="text"
+              value={registrationData.organizationLocation}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, organizationLocation: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+              placeholder="London, UK"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Sector Experience
+            </label>
+            <select
+              value={registrationData.sectorExperience}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, sectorExperience: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            >
+              <option value="">Select experience</option>
+              {sectorExperience.map(exp => (
+                <option key={exp} value={exp}>{exp}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Primary Interest
+            </label>
+            <select
+              value={registrationData.primaryInterest}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, primaryInterest: e.target.value }))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+            >
+              <option value="">Select interest</option>
+              {primaryInterests.map(interest => (
+                <option key={interest} value={interest}>{interest}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            How did you hear about us?
+          </label>
+          <select
+            value={registrationData.referralSource}
+            onChange={(e) => setRegistrationData(prev => ({ ...prev, referralSource: e.target.value }))}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+          >
+            <option value="">Select source</option>
+            {referralSources.map(source => (
+              <option key={source} value={source}>{source}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={registrationData.termsAccepted}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, termsAccepted: e.target.checked }))}
+              className="mt-1 h-4 w-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+            />
+            <label htmlFor="terms" className="text-sm text-gray-700">
+              I accept the <a href="#" className="text-orange-600 hover:text-orange-800">Terms & Conditions</a> *
+            </label>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              id="privacy"
+              checked={registrationData.privacyAccepted}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, privacyAccepted: e.target.checked }))}
+              className="mt-1 h-4 w-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+            />
+            <label htmlFor="privacy" className="text-sm text-gray-700">
+              I accept the <a href="#" className="text-orange-600 hover:text-orange-800">Privacy Policy</a> *
+            </label>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              id="dataProcessing"
+              checked={registrationData.dataProcessingAccepted}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, dataProcessingAccepted: e.target.checked }))}
+              className="mt-1 h-4 w-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+            />
+            <label htmlFor="dataProcessing" className="text-sm text-gray-700">
+              I consent to the processing of my data for salary benchmarking purposes *
+            </label>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              id="marketing"
+              checked={registrationData.marketingAccepted}
+              onChange={(e) => setRegistrationData(prev => ({ ...prev, marketingAccepted: e.target.checked }))}
+              className="mt-1 h-4 w-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+            />
+            <label htmlFor="marketing" className="text-sm text-gray-700">
+              I agree to receive occasional updates about salary trends and platform features
+            </label>
+          </div>
+        </div>
+
+        <div className="text-sm text-gray-600">
+          <p>* Required fields</p>
+          <p className="mt-2">
+            By registering, you agree to our data processing practices as outlined in our Privacy Policy. 
+            Your data will be used solely for salary benchmarking purposes and will be handled in accordance with GDPR requirements.
+          </p>
+        </div>
+      </div>
+    );
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full">
+        <div className="max-w-4xl w-full">
           {/* Floating particles effect */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-40 -right-32 w-80 h-80 rounded-full bg-orange-100 opacity-30"></div>
             <div className="absolute -bottom-40 -left-32 w-80 h-80 rounded-full bg-gray-100 opacity-30"></div>
           </div>
+          
           <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
             <div className="bg-black p-8 text-center">
               <div className="flex justify-center mb-4">
@@ -1506,32 +1814,41 @@ const SalaryBenchmarkingPortal = () => {
               <h1 className="text-2xl font-bold text-white mb-2">Salary Benchmarking Portal</h1>
               <p className="text-gray-300">Engage Executive Talent</p>
             </div>
+            
             <div className="p-8">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                    placeholder="your@email.com"
-                  />
+              {!isRegistering ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                      placeholder="Password"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                    placeholder="Password"
-                  />
-                </div>
-              </div>
-              {message && (
-                <div className={`mt-4 text-center text-sm ${message.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>{message.text}</div>
+              ) : (
+                renderRegistrationForm()
               )}
+
+              {message && (
+                <div className={`mt-4 text-center text-sm ${message.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>
+                  {message.text}
+                </div>
+              )}
+
               <div className="mt-6 space-y-3">
                 {isRegistering ? (
                   <button
@@ -1540,7 +1857,7 @@ const SalaryBenchmarkingPortal = () => {
                     disabled={formLoading}
                     className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {formLoading ? 'Registering...' : 'Register'}
+                    {formLoading ? 'Registering...' : 'Create Account'}
                   </button>
                 ) : (
                   <button
@@ -1553,6 +1870,7 @@ const SalaryBenchmarkingPortal = () => {
                   </button>
                 )}
               </div>
+
               <div className="mt-6 text-center">
                 <button
                   onClick={() => {
@@ -1564,6 +1882,7 @@ const SalaryBenchmarkingPortal = () => {
                   {isRegistering ? 'Already have an account? Sign in' : 'Need an account? Register here'}
                 </button>
               </div>
+
               {/* Demo access section */}
               <div className="mt-8 border-t pt-6">
                 <div className="text-center text-gray-500 text-xs mb-2">Or try a demo account:</div>
