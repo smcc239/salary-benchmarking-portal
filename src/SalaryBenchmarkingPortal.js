@@ -347,6 +347,7 @@ const SalaryBenchmarkingPortal = () => {
 
   // Generate dynamic reports from survey data
   const generateReportData = (role) => {
+    // Get all surveys for this role, regardless of user
     const roleSurveys = database.surveys.filter(survey => survey.role === role);
     
     if (roleSurveys.length === 0) {
@@ -422,7 +423,10 @@ const SalaryBenchmarkingPortal = () => {
     return {
       data,
       trends,
-      demographics
+      demographics,
+      totalResponses: roleSurveys.length,
+      averageSalary: roleSurveys.reduce((sum, s) => sum + parseInt(s.baseSalary), 0) / roleSurveys.length,
+      averageBonus: roleSurveys.reduce((sum, s) => sum + (parseInt(s.bonus) || 0), 0) / roleSurveys.length
     };
   };
 
@@ -1016,10 +1020,7 @@ const SalaryBenchmarkingPortal = () => {
     }
 
     const reportData = generateReportData(role);
-    const { data, trends, demographics } = reportData;
-    const totalResponses = data.reduce((sum, item) => sum + item.count, 0);
-    const averageSalary = totalResponses > 0 ? data.reduce((sum, item) => sum + (item.median * item.count), 0) / totalResponses : 0;
-    const averageBonus = totalResponses > 0 ? data.reduce((sum, item) => sum + (item.bonus * item.count), 0) / totalResponses : 0;
+    const { data, trends, demographics, totalResponses, averageSalary, averageBonus } = reportData;
     const roleSurveys = database.surveys.filter(survey => survey.role === role);
 
     const exportToPDF = () => {
@@ -1087,11 +1088,11 @@ const SalaryBenchmarkingPortal = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-5 h-5" />
-                    <span>Updated May 2025</span>
+                    <span>Updated {new Date().toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Award className="w-5 h-5" />
-                    <span>{roleSurveys.length > 0 ? `${roleSurveys.length} surveys` : 'Industry baseline data'}</span>
+                    <span>Aggregated from all users</span>
                   </div>
                 </div>
               </div>
@@ -1183,7 +1184,7 @@ const SalaryBenchmarkingPortal = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">Average Salary</h3>
                     <p className="text-3xl font-bold text-orange-600">£{Math.round(averageSalary).toLocaleString()}</p>
-                    <p className="text-sm text-green-600 mt-2">+8.5% vs last year</p>
+                    <p className="text-sm text-green-600 mt-2">Based on {totalResponses} responses</p>
                   </div>
 
                   <div className="bg-white p-6 rounded-xl border-l-4 border-gray-600 border border-gray-200">
@@ -1193,7 +1194,7 @@ const SalaryBenchmarkingPortal = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">Sample Size</h3>
                     <p className="text-3xl font-bold text-gray-600">{totalResponses}</p>
-                    <p className="text-sm text-gray-600 mt-2">Highly representative</p>
+                    <p className="text-sm text-gray-600 mt-2">Aggregated responses</p>
                   </div>
 
                   <div className="bg-white p-6 rounded-xl border-l-4 border-gray-600 border border-gray-200">
@@ -1202,7 +1203,9 @@ const SalaryBenchmarkingPortal = () => {
                       <Star className="w-5 h-5 text-orange-500" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">Median Range</h3>
-                    <p className="text-3xl font-bold text-gray-600">£60k-£70k</p>
+                    <p className="text-3xl font-bold text-gray-600">
+                      {data.length > 0 ? data[Math.floor(data.length / 2)].range : 'N/A'}
+                    </p>
                     <p className="text-sm text-gray-600 mt-2">Most common band</p>
                   </div>
 
@@ -1213,7 +1216,7 @@ const SalaryBenchmarkingPortal = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-white mb-1">Avg Bonus</h3>
                     <p className="text-3xl font-bold text-orange-400">£{Math.round(averageBonus).toLocaleString()}</p>
-                    <p className="text-gray-300 text-sm mt-2">12% of base salary</p>
+                    <p className="text-gray-300 text-sm mt-2">Across all responses</p>
                   </div>
                 </div>
 
