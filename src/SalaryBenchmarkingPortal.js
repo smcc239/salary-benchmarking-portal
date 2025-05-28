@@ -350,8 +350,11 @@ const SalaryBenchmarkingPortal = () => {
     const roleSurveys = database.surveys.filter(survey => survey.role === role);
     
     if (roleSurveys.length === 0) {
-      // Return default mock data if no surveys exist
-      return mockSalaryData[role] || mockSalaryData['Chief Executive Officer'];
+      return {
+        data: [],
+        trends: [],
+        demographics: []
+      };
     }
 
     // Process real survey data
@@ -386,21 +389,23 @@ const SalaryBenchmarkingPortal = () => {
     });
 
     // Create chart data
-    const data = Object.entries(distribution).map(([range, data]) => ({
-      range,
-      count: data.count,
-      median: data.count > 0 ? Math.round(data.totalSalary / data.count) : 0,
-      bonus: data.count > 0 ? Math.round(data.totalBonus / data.count) : 0,
-      region: 'Various'
-    })).filter(item => item.count > 0);
+    const data = Object.entries(distribution)
+      .map(([range, data]) => ({
+        range,
+        count: data.count,
+        median: data.count > 0 ? Math.round(data.totalSalary / data.count) : 0,
+        bonus: data.count > 0 ? Math.round(data.totalBonus / data.count) : 0,
+        region: 'Various'
+      }))
+      .filter(item => item.count > 0);
 
-    // Generate trends (simplified)
-    const currentYear = new Date().getFullYear();
-    const avgSalary = roleSurveys.reduce((sum, s) => sum + parseInt(s.baseSalary), 0) / roleSurveys.length;
-    const trends = Array.from({length: 6}, (_, i) => ({
-      year: (currentYear - 5 + i).toString(),
-      salary: Math.round(avgSalary * (0.9 + i * 0.02))
-    }));
+    // Generate trends based on submission dates
+    const trends = roleSurveys
+      .sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt))
+      .map((survey, index) => ({
+        year: new Date(survey.submittedAt).getFullYear().toString(),
+        salary: parseInt(survey.baseSalary)
+      }));
 
     // Generate demographics
     const orgTypes = {};
@@ -415,9 +420,9 @@ const SalaryBenchmarkingPortal = () => {
     }));
 
     return {
-      data: data.length > 0 ? data : mockSalaryData['Chief Executive Officer'].data,
-      trends: trends.length > 0 && trends[0].salary > 0 ? trends : mockSalaryData['Chief Executive Officer'].trends,
-      demographics: demographics.length > 0 ? demographics : mockSalaryData['Chief Executive Officer'].demographics
+      data,
+      trends,
+      demographics
     };
   };
 
@@ -2062,6 +2067,7 @@ const SalaryBenchmarkingPortal = () => {
   const Dashboard = () => {
     const [quickStats] = useState(() => getSystemStats());
     const userSurveys = getUserSurveys(currentUser?.id);
+    const userOrgName = currentUser?.user_metadata?.organizationName || 'Your Organisation';
 
     return (
       <div className="p-6 space-y-8">
@@ -2070,9 +2076,11 @@ const SalaryBenchmarkingPortal = () => {
             <Logo className="h-10 w-auto" showText={false} />
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Welcome back, {currentUser?.name?.split(' ')[0]}! 👋
+                Welcome back, {currentUser?.user_metadata?.full_name?.split(' ')[0] || currentUser?.name?.split(' ')[0]}! 👋
               </h1>
-              <p className="text-gray-600 text-lg">Here's your salary benchmarking overview</p>
+              <p className="text-gray-600 text-lg">
+                {userOrgName} • Salary Benchmarking Overview
+              </p>
             </div>
           </div>
           <div className="hidden md:flex space-x-3">
@@ -2097,7 +2105,10 @@ const SalaryBenchmarkingPortal = () => {
             <h3 className="text-lg font-semibold mb-1 text-gray-900">Surveys Completed</h3>
             <p className="text-3xl font-bold text-orange-600">{userSurveys.length}</p>
             <p className="text-gray-600 text-sm mt-2">
-              {userSurveys.length > 0 ? `Latest: ${new Date(userSurveys[userSurveys.length - 1].submittedAt).toLocaleDateString()}` : 'Start your first survey'}
+              {userSurveys.length > 0 
+                ? `Latest: ${new Date(userSurveys[userSurveys.length - 1].submittedAt).toLocaleDateString()}`
+                : 'Start your first survey to see real-time data'
+              }
             </p>
           </div>
           
@@ -2110,7 +2121,12 @@ const SalaryBenchmarkingPortal = () => {
             </div>
             <h3 className="text-lg font-semibold mb-1 text-gray-900">Available Reports</h3>
             <p className="text-3xl font-bold text-orange-600">{Object.keys(roleCategories).length}</p>
-            <p className="text-gray-600 text-sm mt-2">Unlocked: {completedSurveys.size}</p>
+            <p className="text-gray-600 text-sm mt-2">
+              {completedSurveys.size > 0 
+                ? `${completedSurveys.size} unlocked with your data`
+                : 'Complete surveys to unlock reports'
+              }
+            </p>
           </div>
           
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-all">
@@ -2124,11 +2140,11 @@ const SalaryBenchmarkingPortal = () => {
             <p className="text-3xl font-bold text-orange-600">
               {userSurveys.length > 0 
                 ? `£${Math.round(userSurveys.reduce((sum, s) => sum + parseInt(s.baseSalary), 0) / userSurveys.length).toLocaleString()}`
-                : 'N/A'
+                : 'Complete surveys to see'
               }
             </p>
             <p className="text-gray-600 text-sm mt-2">
-              {userSurveys.length > 0 ? 'Across your roles' : 'Complete surveys to see'}
+              {userSurveys.length > 0 ? 'Based on your submitted data' : 'Your data will be kept private'}
             </p>
           </div>
         </div>
@@ -2158,7 +2174,7 @@ const SalaryBenchmarkingPortal = () => {
                     title: 'Explore Salary Reports',
                     description: 'View detailed analytics and compare with industry standards',
                     action: 'View Reports',
-                    completed: false,
+                    completed: completedSurveys.size > 0,
                     color: 'gray'
                   },
                   {
@@ -2212,17 +2228,20 @@ const SalaryBenchmarkingPortal = () => {
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Total Surveys</span>
-                  <span className="font-bold text-orange-600">{getSystemStats().totalSurveys}</span>
+                  <span className="text-gray-600">Your Surveys</span>
+                  <span className="font-bold text-orange-600">{userSurveys.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Active Roles</span>
-                  <span className="font-bold text-orange-600">{getSystemStats().uniqueRoles}</span>
+                  <span className="text-gray-600">Roles Completed</span>
+                  <span className="font-bold text-orange-600">{completedSurveys.size}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Avg Salary</span>
                   <span className="font-bold text-orange-600">
-                    {getSystemStats().avgSalary > 0 ? `£${getSystemStats().avgSalary.toLocaleString()}` : 'N/A'}
+                    {userSurveys.length > 0 
+                      ? `£${Math.round(userSurveys.reduce((sum, s) => sum + parseInt(s.baseSalary), 0) / userSurveys.length).toLocaleString()}`
+                      : 'N/A'
+                    }
                   </span>
                 </div>
               </div>
@@ -2234,7 +2253,7 @@ const SalaryBenchmarkingPortal = () => {
                 Pro Tip
               </h3>
               <p className="text-gray-700 text-sm leading-relaxed">
-                Complete surveys for multiple roles to get a comprehensive view of your organization's compensation strategy and unlock advanced analytics.
+                Complete surveys for multiple roles to get a comprehensive view of your organisation's compensation strategy and unlock advanced analytics.
               </p>
             </div>
           </div>
