@@ -1441,6 +1441,54 @@ const SalaryBenchmarkingPortal = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
+    const [formLoading, setFormLoading] = useState(false);
+    const [message, setMessage] = useState(null);
+
+    // Registration handler
+    const handleRegister = async () => {
+      if (!email || !password) {
+        setMessage({ type: 'error', text: 'Please enter both email and password.' });
+        return;
+      }
+      setFormLoading(true);
+      setMessage(null);
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: email.split('@')[0],
+              role: 'user'
+            }
+          }
+        });
+        if (error) throw error;
+        setMessage({ type: 'success', text: 'Account created! Please check your email to verify your account, then log in.' });
+        setIsRegistering(false);
+        setEmail('');
+        setPassword('');
+      } catch (error) {
+        setMessage({ type: 'error', text: error.message });
+      }
+      setFormLoading(false);
+    };
+
+    // Login handler (real user, not demo)
+    const handleRealLogin = async () => {
+      if (!email || !password) {
+        setMessage({ type: 'error', text: 'Please enter both email and password.' });
+        return;
+      }
+      setFormLoading(true);
+      setMessage(null);
+      try {
+        await handleLogin(email, password, false);
+      } catch (error) {
+        setMessage({ type: 'error', text: error.message });
+      }
+      setFormLoading(false);
+    };
 
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -1450,7 +1498,6 @@ const SalaryBenchmarkingPortal = () => {
             <div className="absolute -top-40 -right-32 w-80 h-80 rounded-full bg-orange-100 opacity-30"></div>
             <div className="absolute -bottom-40 -left-32 w-80 h-80 rounded-full bg-gray-100 opacity-30"></div>
           </div>
-          
           <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
             <div className="bg-black p-8 text-center">
               <div className="flex justify-center mb-4">
@@ -1459,7 +1506,6 @@ const SalaryBenchmarkingPortal = () => {
               <h1 className="text-2xl font-bold text-white mb-2">Salary Benchmarking Portal</h1>
               <p className="text-gray-300">Engage Executive Talent</p>
             </div>
-            
             <div className="p-8">
               <div className="space-y-4">
                 <div>
@@ -1472,7 +1518,6 @@ const SalaryBenchmarkingPortal = () => {
                     placeholder="your@email.com"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                   <input
@@ -1484,46 +1529,57 @@ const SalaryBenchmarkingPortal = () => {
                   />
                 </div>
               </div>
-              
+              {message && (
+                <div className={`mt-4 text-center text-sm ${message.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>{message.text}</div>
+              )}
               <div className="mt-6 space-y-3">
+                {isRegistering ? (
+                  <button
+                    type="button"
+                    onClick={handleRegister}
+                    disabled={formLoading}
+                    className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {formLoading ? 'Registering...' : 'Register'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleRealLogin}
+                    disabled={formLoading}
+                    className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {formLoading ? 'Signing In...' : 'Sign In'}
+                  </button>
+                )}
+              </div>
+              <div className="mt-6 text-center">
                 <button
-                  type="button"
                   onClick={() => {
-                    if (!email || !password) {
-                      alert('Please enter both email and password');
-                      return;
-                    }
-                    handleLogin(email, password);
+                    setIsRegistering(!isRegistering);
+                    setMessage(null);
                   }}
-                  disabled={loading}
-                  className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-orange-600 hover:text-orange-800 text-sm transition-colors"
                 >
-                  {loading ? 'Signing In...' : (isRegistering ? 'Create Account' : 'Sign In')}
+                  {isRegistering ? 'Already have an account? Sign in' : 'Need an account? Register here'}
                 </button>
-                
+              </div>
+              {/* Demo access section */}
+              <div className="mt-8 border-t pt-6">
+                <div className="text-center text-gray-500 text-xs mb-2">Or try a demo account:</div>
                 <button
                   type="button"
                   onClick={() => handleLogin('admin@engage.com', 'admin', 'admin')}
-                  className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
+                  className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all mb-2"
                 >
                   🚀 Demo Admin Access
                 </button>
-
                 <button
                   type="button"
                   onClick={() => handleLogin('user@demo.com', 'user', 'user')}
                   className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
                 >
                   👤 Demo User Access
-                </button>
-              </div>
-              
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => setIsRegistering(!isRegistering)}
-                  className="text-orange-600 hover:text-orange-800 text-sm transition-colors"
-                >
-                  {isRegistering ? 'Already have an account? Sign in' : 'Need an account? Register here'}
                 </button>
               </div>
             </div>
