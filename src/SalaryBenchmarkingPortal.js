@@ -8,6 +8,26 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Shared constants
+const organizationTypes = [
+  'Charity',
+  'Social Enterprise',
+  'CIC',
+  'Housing Association',
+  'Foundation',
+  'Community Group',
+  'Other'
+];
+
+const organizationSizes = [
+  '1-10 employees',
+  '11-50 employees',
+  '51-100 employees',
+  '101-500 employees',
+  '500-1000 employees',
+  '1000+ employees'
+];
+
 const SalaryBenchmarkingPortal = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentView, setCurrentView] = useState('login');
@@ -1462,25 +1482,6 @@ const SalaryBenchmarkingPortal = () => {
       marketingAccepted: false
     });
 
-    const organizationTypes = [
-      'Charity',
-      'Social Enterprise',
-      'CIC',
-      'Housing Association',
-      'Foundation',
-      'Community Group',
-      'Other'
-    ];
-
-    const organizationSizes = [
-      '1-10 employees',
-      '11-50 employees',
-      '51-100 employees',
-      '101-500 employees',
-      '500-1000 employees',
-      '1000+ employees'
-    ];
-
     const sectorExperience = [
       'Less than 1 year',
       '1-3 years',
@@ -2771,7 +2772,7 @@ const SalaryBenchmarkingPortal = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Organisation Type
+              Organisation Type *
             </label>
             <select
               value={profileData.organizationType}
