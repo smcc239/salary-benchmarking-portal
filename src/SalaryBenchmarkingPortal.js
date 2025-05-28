@@ -156,7 +156,7 @@ const SalaryBenchmarkingPortal = () => {
   // Logo component with fallback
   const Logo = ({ className = "h-8 w-auto", showText = true, textSize = "text-lg" }) => (
     <div className="flex items-center space-x-2">
-      <div className="bg-white rounded p-1 flex items-center justify-center" style={{ minWidth: '120px', minHeight: '32px' }}>
+      <div className="rounded p-1 flex items-center justify-center" style={{ minWidth: '120px', minHeight: '32px' }}>
         <img 
           src="https://engageexec.co.uk/wp-content/themes/html5blank/img/nav/main-logo.png" 
           alt="Engage Executive Talent" 
