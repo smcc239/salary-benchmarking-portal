@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { BarChart2, FileText } from 'lucide-react';
 import { SurveyForm } from './SurveyForm';
-import { BenchmarkReport } from './BenchmarkReport';
-import type { BenchmarkedRole, BenchmarkReport as BenchmarkReportType } from '../types/survey';
+import { BenchmarkReport as BenchmarkReportComponent } from './BenchmarkReport';
+import type { BenchmarkedRole, BenchmarkReport } from '../types/survey';
 
 interface RolesListProps {
   roles: BenchmarkedRole[];
-  onViewReport: (roleId: string) => BenchmarkReportType;
+  onViewReport: (roleId: string) => BenchmarkReport;
 }
 
 export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => {
@@ -14,7 +14,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
 
-  const handleRoleClick = (role: BenchmarkedRole) => {
+  const handleRoleClick = (role: BenchmarkedRole): void => {
     setSelectedRole(role);
     if (role.surveyCompleted) {
       setIsReportOpen(true);
@@ -23,7 +23,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
     }
   };
 
-  const handleSurveyComplete = async () => {
+  const handleSurveyComplete = async (): Promise<void> => {
     setIsSurveyOpen(false);
     if (selectedRole) {
       setIsReportOpen(true);
@@ -33,7 +33,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
   return (
     <div>
       <div className="grid gap-4">
-        {roles.map((role) => (
+        {roles.map((role: BenchmarkedRole) => (
           <div
             key={role.id}
             className="bg-white rounded-lg border border-gray-200 p-4 hover:border-orange-600 transition-all cursor-pointer"
@@ -70,7 +70,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
       {isReportOpen && selectedRole && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <BenchmarkReport
+            <BenchmarkReportComponent
               report={onViewReport(selectedRole.id)}
             />
           </div>

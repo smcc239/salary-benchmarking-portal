@@ -1,3 +1,5 @@
+import { JobTheme } from './user';
+
 export interface SurveyResponse {
   roleId: string;
   organizationCategory: 'Charity' | 'Social Enterprise' | 'Community Interest Company' | 'Private Company' | 'Public Sector' | 'Other';
@@ -30,7 +32,7 @@ export interface BenchmarkedRole {
 export interface BenchmarkReport {
   roleId: string;
   title: string;
-  theme: string;
+  theme: JobTheme;
   averageSalary: number;
   salaryRange: {
     min: number;

@@ -22,6 +22,9 @@
     "web-vitals": "^2.1.4",
     "zod": "^3.22.4"
   },
+  "devDependencies": {
+    "@types/lucide-react": "^0.344.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
