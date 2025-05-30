@@ -53,11 +53,42 @@ const mockRole: BenchmarkedRole = {
     description: 'IT, Software Development, and Technical Roles',
     roles: []
   },
-  averageSalary: 65000,
-  salaryRange: {
-    min: 45000,
-    max: 85000,
-    median: 65000
+  compensation: {
+    baseSalary: {
+      min: 45000,
+      max: 85000,
+      median: 65000,
+      average: 65000,
+      midPoint: 65000
+    },
+    pension: {
+      min: 2250,
+      max: 4250,
+      median: 3250,
+      average: 3250,
+      midPoint: 3250
+    },
+    totalCompensation: {
+      min: 47250,
+      max: 89250,
+      median: 68250,
+      average: 68250,
+      midPoint: 68250
+    },
+    annualBonus: {
+      min: 0,
+      max: 15000,
+      median: 5000,
+      average: 5000,
+      midPoint: 5000
+    },
+    overtimeEarnings: {
+      min: 0,
+      max: 10000,
+      median: 2000,
+      average: 2000,
+      midPoint: 2000
+    }
   },
   requirements: ['Bachelor\'s degree', '3+ years experience'],
   responsibilities: ['Develop software', 'Code review'],

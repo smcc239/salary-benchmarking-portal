@@ -12,16 +12,27 @@ export interface User {
   updatedAt: string;
 }
 
+export interface CompensationData {
+  min: number;
+  max: number;
+  median: number;
+  average: number;
+  midPoint: number;
+}
+
+export interface Compensation {
+  baseSalary: CompensationData;
+  pension: CompensationData;
+  totalCompensation: CompensationData;
+  annualBonus: CompensationData;
+  overtimeEarnings: CompensationData;
+}
+
 export interface BenchmarkedRole {
   roleId: string;
   title: string;
   theme: JobTheme;
-  averageSalary: number;
-  salaryRange: {
-    min: number;
-    max: number;
-    median: number;
-  };
+  compensation: Compensation;
   requirements: string[];
   responsibilities: string[];
   skills: string[];

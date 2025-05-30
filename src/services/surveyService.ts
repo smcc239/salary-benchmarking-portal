@@ -25,12 +25,12 @@ export const submitSurvey = async (surveyData: SurveyData): Promise<void> => {
         const role = theme.roles.find((r: { title: string }) => r.title === surveyData.role);
         if (role) {
           // Update the role's salary data
-          const newSalary = (role.averageSalary + surveyData.salary) / 2;
-          role.averageSalary = Math.round(newSalary);
+          const newSalary = (role.compensation.baseSalary.average + surveyData.salary) / 2;
+          role.compensation.baseSalary.average = Math.round(newSalary);
           
           // Update salary range
-          role.salaryRange.min = Math.min(role.salaryRange.min, surveyData.salary);
-          role.salaryRange.max = Math.max(role.salaryRange.max, surveyData.salary);
+          role.compensation.baseSalary.min = Math.min(role.compensation.baseSalary.min, surveyData.salary);
+          role.compensation.baseSalary.max = Math.max(role.compensation.baseSalary.max, surveyData.salary);
           
           // Mark survey as completed
           role.surveyCompleted = true;
