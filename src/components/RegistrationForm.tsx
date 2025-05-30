@@ -28,7 +28,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, on
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setError('');
 
