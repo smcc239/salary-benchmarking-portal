@@ -69,5 +69,56 @@ const SalaryBenchmarkingPortal: React.FC = () => {
     reports: {}
   });
 
-  // ... rest of the component implementation
-}; 
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-semibold text-gray-900">Salary Benchmarking Portal</h1>
+            <div className="flex items-center space-x-4">
+              {currentUser ? (
+                <>
+                  <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                  >
+                    <Menu className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={() => setCurrentView('notifications')}
+                    className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 relative"
+                  >
+                    <Bell className="h-6 w-6" />
+                    {notifications.length > 0 && (
+                      <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
+                    )}
+                  </button>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {/* Content will be rendered here based on currentView */}
+            {currentView === 'login' && (
+              <div className="text-center">
+                <h2 className="text-xl font-medium text-gray-900">Welcome to the Salary Benchmarking Portal</h2>
+                <p className="mt-2 text-gray-600">Please sign in to continue</p>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default SalaryBenchmarkingPortal; 
