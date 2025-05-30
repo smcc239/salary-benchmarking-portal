@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area } from 'recharts';
 import { Users, FileText, BarChart3, Settings, Download, Eye, Lock, CheckCircle, AlertCircle, Menu, X, Search, Filter, Bell, BookmarkPlus, Share, TrendingUp, Calendar, Globe, Award, Zap, Target, Activity, DollarSign, Building, UserCheck, MessageSquare, Star, ArrowRight } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
+import { generateReport } from './services/reportService';
 
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;

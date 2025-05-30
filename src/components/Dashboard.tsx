@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { DashboardHeader } from './DashboardHeader';
 import { RolesList } from './RolesList';
 import { User, BenchmarkedRole } from '../types/user';
+import { BenchmarkReport } from '../types/survey';
 
 interface DashboardProps {
   user: User;
   roles: BenchmarkedRole[];
   onLogout: () => void;
   onImportData: (data: any) => void;
-  onViewReport: (roleId: string) => void;
+  onViewReport: (roleId: string) => BenchmarkReport;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
