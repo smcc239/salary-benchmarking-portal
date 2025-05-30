@@ -23,6 +23,46 @@ declare module 'react' {
     (props: P): ReactElement<any, any> | null;
   }
 
+  export interface ChangeEvent<T = Element> {
+    target: T;
+    currentTarget: T;
+  }
+
+  export interface FormEvent<T = Element> {
+    target: T;
+    currentTarget: T;
+  }
+
+  export interface MouseEvent<T = Element> {
+    target: T;
+    currentTarget: T;
+  }
+
+  export interface KeyboardEvent<T = Element> {
+    target: T;
+    currentTarget: T;
+    key: string;
+  }
+
+  export interface HTMLInputElement extends Element {
+    value: string;
+    files: FileList | null;
+    checked: boolean;
+  }
+
+  export interface FileList {
+    readonly length: number;
+    item(index: number): File | null;
+    [index: number]: File;
+  }
+
+  export interface File {
+    readonly name: string;
+    readonly size: number;
+    readonly type: string;
+    readonly lastModified: number;
+  }
+
   export function useState<T>(initialState: T | (() => T)): [T, (newState: T | ((prevState: T) => T)) => void];
   export function useEffect(effect: () => void | (() => void), deps?: readonly any[]): void;
 } 

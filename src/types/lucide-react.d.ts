@@ -5,6 +5,7 @@ declare module 'lucide-react' {
     size?: number | string;
     color?: string;
     strokeWidth?: number | string;
+    className?: string;
   }
 
   export type Icon = FC<IconProps>;
