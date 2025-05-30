@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { LoginForm } from './components/LoginForm';
+import { AppRoutes } from './routes';
 import { User } from './types/user';
 
 // Mock user for development
@@ -44,16 +45,7 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Layout user={user}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/roles" replace />} />
-          <Route path="/roles" element={<div>Job Roles</div>} />
-          <Route path="/roles/themes" element={<div>Job Themes</div>} />
-          <Route path="/roles/single" element={<div>Single Job</div>} />
-          <Route path="/reports" element={<div>Reports</div>} />
-          <Route path="/reports/single" element={<div>Single Reports</div>} />
-          <Route path="/profile" element={<div>Profile</div>} />
-          <Route path="/profile/settings" element={<div>Profile Settings</div>} />
-        </Routes>
+        <AppRoutes />
       </Layout>
     </BrowserRouter>
   );
