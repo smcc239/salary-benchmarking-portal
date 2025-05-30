@@ -1,4 +1,4 @@
-import { JobTheme } from './user';
+import { JobTheme } from './job';
 
 export interface SurveyResponse {
   roleId: string;
