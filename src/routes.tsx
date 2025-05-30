@@ -1,10 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Profile } from './components/Profile';
+import { sampleUsers } from './data/sampleData';
 
 type AppRoutesProps = Record<string, never>;
 
 const AppRoutes: React.FC<AppRoutesProps> = () => {
+  const mockUser = sampleUsers[0]; // Use the first sample user
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/roles" replace />} />
