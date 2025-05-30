@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RegistrationForm } from './RegistrationForm';
-import { registerUser, loginUser, login } from '../services/authService';
+import { registerUser, loginUser } from '../services/authService';
 import { User } from '../types/user';
 
 interface LoginFormProps {
