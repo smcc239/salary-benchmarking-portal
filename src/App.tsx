@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Dashboard } from './components/Dashboard';
 import type { User, BenchmarkedRole } from './types/user';
+import { BenchmarkReport } from './types/survey';
+import { generateReport } from './services/reportService';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -15,9 +17,12 @@ const App: React.FC = () => {
     console.log('Imported data:', data);
   };
 
-  const handleViewReport = (roleId: string) => {
-    // Handle viewing a report
-    console.log('Viewing report for role:', roleId);
+  const handleViewReport = (roleId: string): BenchmarkReport => {
+    const role = roles.find(r => r.id === roleId);
+    if (!role) {
+      throw new Error(`Role with ID ${roleId} not found`);
+    }
+    return generateReport(role.id, role.title, role.theme);
   };
 
   if (!user) {
