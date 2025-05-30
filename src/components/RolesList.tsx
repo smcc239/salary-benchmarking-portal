@@ -43,7 +43,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">{role.title}</h4>
-                <p className="text-sm text-gray-500">Theme: {role.theme}</p>
+                <p className="text-sm text-gray-500">Theme: {role.theme.name}</p>
               </div>
               <div className="flex items-center space-x-2">
                 {role.surveyCompleted ? (
