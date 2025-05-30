@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Dashboard } from './components/Dashboard';
 import type { User, BenchmarkedRole } from './types/user';
 import { BenchmarkReport } from './types/survey';
@@ -43,30 +43,65 @@ const App: React.FC = () => {
             </p>
           </div>
 
-          <form className="mt-8 space-y-6" onSubmit={(e) => {
+          <form className="mt-8 space-y-6" onSubmit={(e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             // For demo purposes, create a mock user
             setUser({
               id: '1',
               name: 'Demo User',
               email: 'demo@example.com',
-              company: 'Demo Company'
+              organization: 'Demo Company',
+              role: 'Admin',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
             });
             // Add some mock roles
             setRoles([
               {
-                id: '1',
+                roleId: '1',
                 title: 'Chief Technology Officer',
-                theme: 'Chief Officer',
-                surveyCompleted: false,
-                lastUpdated: new Date().toISOString()
+                theme: 'technology',
+                averageSalary: 120000,
+                salaryRange: {
+                  min: 100000,
+                  max: 150000,
+                  median: 120000
+                },
+                requirements: ['10+ years experience', 'Leadership skills'],
+                responsibilities: ['Technology strategy', 'Team management'],
+                skills: ['Leadership', 'Strategic Planning'],
+                experience: '10+ years',
+                education: 'Bachelor\'s',
+                location: 'London',
+                organizationType: 'Charity',
+                organizationSize: '51-100 employees',
+                industry: 'Technology',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                surveyCompleted: false
               },
               {
-                id: '2',
+                roleId: '2',
                 title: 'Head of HR',
-                theme: 'Human Resources',
-                surveyCompleted: true,
-                lastUpdated: new Date().toISOString()
+                theme: 'human-resources',
+                averageSalary: 90000,
+                salaryRange: {
+                  min: 75000,
+                  max: 110000,
+                  median: 90000
+                },
+                requirements: ['8+ years HR experience', 'CIPD qualified'],
+                responsibilities: ['HR strategy', 'Employee relations'],
+                skills: ['HR Management', 'Employee Relations'],
+                experience: '8+ years',
+                education: 'Bachelor\'s',
+                location: 'London',
+                organizationType: 'Charity',
+                organizationSize: '51-100 employees',
+                industry: 'Human Resources',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                surveyCompleted: true
               }
             ]);
           }}>
