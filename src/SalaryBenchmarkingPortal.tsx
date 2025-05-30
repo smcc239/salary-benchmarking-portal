@@ -8,12 +8,8 @@ import { SurveyResponse, BenchmarkReport } from './types/survey';
 import { JobTheme } from './types/job';
 
 // Supabase client setup
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase configuration. Please check your environment variables.');
-}
+const supabaseUrl = 'https://your-project.supabase.co';
+const supabaseKey = 'your-anon-key';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -51,7 +47,12 @@ interface FilterOptions {
 const mockRole: BenchmarkedRole = {
   roleId: '1',
   title: 'Software Engineer',
-  theme: 'technology' as JobTheme,
+  theme: {
+    id: '1',
+    name: 'Technology',
+    description: 'IT, Software Development, and Technical Roles',
+    roles: []
+  },
   averageSalary: 65000,
   salaryRange: {
     min: 45000,
