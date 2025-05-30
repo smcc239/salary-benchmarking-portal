@@ -18,11 +18,11 @@ const App: React.FC = () => {
   };
 
   const handleViewReport = (roleId: string): BenchmarkReport => {
-    const role = roles.find(r => r.id === roleId);
+    const role = roles.find(r => r.roleId === roleId);
     if (!role) {
       throw new Error(`Role with ID ${roleId} not found`);
     }
-    return generateReport(role.id, role.title, role.theme);
+    return generateReport(role.roleId, role.title, role.theme);
   };
 
   if (!user) {

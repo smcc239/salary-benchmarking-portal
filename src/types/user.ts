@@ -31,4 +31,5 @@ export interface BenchmarkedRole {
   industry: string;
   createdAt: string;
   updatedAt: string;
+  surveyCompleted: boolean;
 } 

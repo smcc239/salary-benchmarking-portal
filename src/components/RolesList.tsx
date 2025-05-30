@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { BarChart2, FileText } from 'lucide-react';
 import { SurveyForm } from './SurveyForm';
 import { BenchmarkReport as BenchmarkReportComponent } from './BenchmarkReport';
-import type { BenchmarkedRole, BenchmarkReport } from '../types/survey';
+import { BenchmarkedRole } from '../types/user';
+import { BenchmarkReport } from '../types/survey';
 
 interface RolesListProps {
   roles: BenchmarkedRole[];
@@ -35,8 +36,8 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
       <div className="grid gap-4">
         {roles.map((role: BenchmarkedRole) => (
           <div
-            key={role.id}
-            className="bg-white rounded-lg border border-gray-200 p-4 hover:border-orange-600 transition-all cursor-pointer"
+            key={role.roleId}
+            className="bg-white shadow rounded-lg p-4 hover:shadow-md transition-shadow"
             onClick={() => handleRoleClick(role)}
           >
             <div className="flex items-center justify-between">
@@ -71,7 +72,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <BenchmarkReportComponent
-              report={onViewReport(selectedRole.id)}
+              report={onViewReport(selectedRole.roleId)}
             />
           </div>
         </div>

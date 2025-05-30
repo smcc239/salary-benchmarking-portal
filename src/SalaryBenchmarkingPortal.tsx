@@ -68,7 +68,8 @@ const mockRole: BenchmarkedRole = {
   organizationSize: '11-50 employees',
   industry: 'Technology',
   createdAt: '2024-01-01',
-  updatedAt: '2024-01-01'
+  updatedAt: '2024-01-01',
+  surveyCompleted: false
 };
 
 const SalaryBenchmarkingPortal: React.FC = () => {
