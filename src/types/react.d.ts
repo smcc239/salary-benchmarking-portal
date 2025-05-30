@@ -65,4 +65,7 @@ declare module 'react' {
 
   export function useState<T>(initialState: T | (() => T)): [T, (newState: T | ((prevState: T) => T)) => void];
   export function useEffect(effect: () => void | (() => void), deps?: readonly any[]): void;
+
+  export const StrictMode: FC<{ children?: ReactNode }>;
+  export type ReactNode = ReactElement | string | number | boolean | null | undefined | ReactNode[];
 } 
