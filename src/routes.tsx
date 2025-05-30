@@ -1,7 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-export const AppRoutes: React.FC = () => {
+type AppRoutesProps = Record<string, never>;
+
+const AppRoutes: React.FC<AppRoutesProps> = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/roles" replace />} />
@@ -14,4 +16,6 @@ export const AppRoutes: React.FC = () => {
       <Route path="/profile/settings" element={<div>Profile Settings</div>} />
     </Routes>
   );
-}; 
+};
+
+export default AppRoutes; 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { LoginForm } from './components/LoginForm';
-import { AppRoutes } from './routes';
+import AppRoutes from './routes';
 import { User } from './types/user';
 
 // Mock user for development
