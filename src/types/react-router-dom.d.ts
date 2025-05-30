@@ -13,7 +13,16 @@ declare module 'react-router-dom' {
     (to: string, options?: { replace?: boolean; state?: any }): void;
   }
 
+  export interface Location {
+    pathname: string;
+    search: string;
+    hash: string;
+    state: any;
+    key: string;
+  }
+
   export function useNavigate(): NavigateFunction;
+  export function useLocation(): Location;
 
   export const Routes: ComponentType<{ children?: ReactNode }>;
   export const Route: ComponentType<RouteObject>;
