@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Dashboard } from './components/Dashboard';
 import type { User, BenchmarkedRole } from './types/user';
 import { BenchmarkReport } from './types/survey';
@@ -43,7 +43,7 @@ const App: React.FC = () => {
             </p>
           </div>
 
-          <form className="mt-8 space-y-6" onSubmit={(e: FormEvent<HTMLFormElement>) => {
+          <form className="mt-8 space-y-6" onSubmit={(e) => {
             e.preventDefault();
             // For demo purposes, create a mock user
             setUser({
