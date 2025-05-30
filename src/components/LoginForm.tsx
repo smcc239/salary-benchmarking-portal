@@ -16,7 +16,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -33,7 +33,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   };
 
   const handleRegister = async (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) => {
-    setError(null);
+    setError('');
     setIsLoading(true);
 
     try {
