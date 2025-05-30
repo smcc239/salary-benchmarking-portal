@@ -1,12 +1,22 @@
 export interface SurveyResponse {
   roleId: string;
-  salary: number;
-  bonus: number;
-  benefits: string[];
-  experience: number;
-  location: string;
-  companySize: string;
-  industry: string;
+  organizationCategory: 'Charity' | 'Social Enterprise' | 'Community Interest Company' | 'Private Company' | 'Public Sector' | 'Other';
+  totalStaff: string;
+  annualTurnover: string;
+  reportingStaff: string;
+  baseSalary: string;
+  bonusPayments: string;
+  shareValue: string;
+  responsibilities: {
+    staffManagement: boolean;
+    budgetManagement: boolean;
+    resourcesManagement: boolean;
+    externalStakeholderManagement: boolean;
+    systemOperation: boolean;
+    marketing: boolean;
+    contractManagement: boolean;
+    businessDevelopment: boolean;
+  };
   submittedAt: string;
 }
 

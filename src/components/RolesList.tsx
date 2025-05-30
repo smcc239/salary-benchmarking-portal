@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { BenchmarkedRole, JobTheme } from '../types/user';
+import { BenchmarkedRole } from '../types/user';
 import { SurveyForm } from './SurveyForm';
 import { BenchmarkReport } from './BenchmarkReport';
-import type { SurveyResponse } from '../types/survey';
-import { storage } from '../services/storage';
-import { generateBenchmarkReport } from '../utils/reportGenerator';
+import { FileText, BarChart2 } from 'lucide-react';
 
 interface RolesListProps {
   roles: BenchmarkedRole[];
@@ -12,216 +10,72 @@ interface RolesListProps {
 }
 
 export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => {
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [showSurvey, setShowSurvey] = useState(false);
-  const [showReport, setShowReport] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<JobTheme | 'all'>('all');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<BenchmarkedRole | null>(null);
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
-  const themes: JobTheme[] = [
-    'Chief Officer',
-    'Communications',
-    'Corporate Services',
-    'Human Resources',
-    'Income Generation',
-    'Operations',
-    'Service Delivery'
-  ];
-
-  const handleSurveySubmit = async (data: SurveyResponse) => {
-    if (!selectedRole) return;
-    
-    setIsSubmitting(true);
-    setError(null);
-    
-    try {
-      storage.saveSurveyResponse(selectedRole, data);
-      
-      const role = roles.find(r => r.id === selectedRole);
-      if (!role) throw new Error('Role not found');
-      
-      const responses = storage.getSurveyResponses(selectedRole);
-      const report = generateBenchmarkReport(role.title, role.theme, responses);
-      storage.saveReport(selectedRole, report);
-
-      setShowSurvey(false);
-      setShowReport(true);
-      onViewReport(selectedRole);
-    } catch (error) {
-      console.error('Error submitting survey:', error);
-      setError(error instanceof Error ? error.message : 'Failed to submit survey');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleViewReport = (role: BenchmarkedRole) => {
-    setSelectedRole(role.id);
-    setError(null);
-    
+  const handleRoleClick = (role: BenchmarkedRole) => {
+    setSelectedRole(role);
     if (role.surveyCompleted) {
-      const report = storage.getReport(role.id);
-      if (!report) {
-        try {
-          const responses = storage.getSurveyResponses(role.id);
-          const newReport = generateBenchmarkReport(role.title, role.theme, responses);
-          storage.saveReport(role.id, newReport);
-          setShowReport(true);
-          setShowSurvey(false);
-        } catch (error) {
-          console.error('Error generating report:', error);
-          setError('Failed to generate report. Please try completing the survey again.');
-          setShowReport(false);
-          setShowSurvey(true);
-        }
-      } else {
-        setShowReport(true);
-        setShowSurvey(false);
-      }
+      setIsReportOpen(true);
     } else {
-      setShowReport(false);
-      setShowSurvey(true);
+      setIsSurveyOpen(true);
     }
   };
 
-  const filteredRoles = selectedTheme === 'all' 
-    ? roles 
-    : roles.filter(role => role.theme === selectedTheme);
-
-  if (showReport && selectedRole) {
-    const report = storage.getReport(selectedRole);
-    if (!report) {
-      return (
-        <div className="p-6 text-center text-white">
-          <p className="text-red-400 mb-4">Error: Report not found</p>
-          <button
-            onClick={() => setShowReport(false)}
-            className="px-4 py-2 text-sm font-medium bg-engage-accent hover:bg-engage-accent/90 rounded-md transition-colors"
-          >
-            Back to Roles
-          </button>
-        </div>
-      );
+  const handleSurveyComplete = () => {
+    setIsSurveyOpen(false);
+    if (selectedRole) {
+      setIsReportOpen(true);
     }
-    
-    return (
-      <div className="p-6">
-        <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-lg font-medium text-white">Benchmark Report</h2>
-          <button
-            onClick={() => setShowReport(false)}
-            className="px-4 py-2 text-sm font-medium text-white hover:text-engage-accent transition-colors"
-          >
-            Back to Roles
-          </button>
-        </div>
-        <BenchmarkReport report={report} />
-      </div>
-    );
-  }
-
-  if (showSurvey && selectedRole) {
-    const role = roles.find(r => r.id === selectedRole);
-    return (
-      <div className="p-6">
-        <div className="mb-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-lg font-medium text-white">Complete Survey for {role?.title}</h2>
-              <p className="mt-2 text-sm text-gray-400">
-                Please complete this survey to view the benchmarking report.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setShowSurvey(false);
-                setSelectedRole(null);
-                setError(null);
-              }}
-              className="px-4 py-2 text-sm font-medium text-white hover:text-engage-accent transition-colors"
-            >
-              Back to Roles
-            </button>
-          </div>
-          {error && (
-            <div className="mt-4 p-4 bg-red-900/50 border border-red-500/50 rounded-md">
-              <p className="text-sm text-red-200">{error}</p>
-            </div>
-          )}
-        </div>
-        <SurveyForm onSubmit={handleSurveySubmit} isLoading={isSubmitting} />
-      </div>
-    );
-  }
+  };
 
   return (
     <div>
-      <div className="px-6 py-5 border-b border-white/10">
-        <div className="flex flex-col space-y-4">
-          <h2 className="text-lg font-medium text-white">Benchmarked Roles</h2>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedTheme('all')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
-                ${selectedTheme === 'all'
-                  ? 'bg-engage-accent text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-            >
-              All Roles
-            </button>
-            {themes.map(theme => (
-              <button
-                key={theme}
-                onClick={() => setSelectedTheme(theme)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
-                  ${selectedTheme === theme
-                    ? 'bg-engage-accent text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                  }`}
-              >
-                {theme}
-              </button>
-            ))}
+      <div className="grid gap-4">
+        {roles.map((role) => (
+          <div
+            key={role.id}
+            className="bg-white rounded-lg border border-gray-200 p-4 hover:border-orange-600 transition-all cursor-pointer"
+            onClick={() => handleRoleClick(role)}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">{role.title}</h4>
+                <p className="text-sm text-gray-500">Theme: {role.theme}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                {role.surveyCompleted ? (
+                  <BarChart2 className="w-5 h-5 text-orange-600" />
+                ) : (
+                  <FileText className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
-      <div className="divide-y divide-white/10">
-        {filteredRoles.length === 0 ? (
-          <div className="px-6 py-8 text-center">
-            <p className="text-gray-400">No roles found in this category</p>
+      {isSurveyOpen && selectedRole && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <SurveyForm
+              onSubmit={handleSurveyComplete}
+              isLoading={false}
+            />
           </div>
-        ) : (
-          <ul className="divide-y divide-white/10">
-            {filteredRoles.map((role) => (
-              <li key={role.id} className="px-6 py-5 hover:bg-white/5 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-white">{role.title}</h3>
-                    <p className="text-sm text-gray-400">{role.theme}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Last updated: {new Date(role.lastUpdated).toLocaleDateString()}
-                    </p>
-                    {!role.surveyCompleted && (
-                      <p className="text-xs text-engage-accent mt-1">
-                        Survey required for report access
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleViewReport(role)}
-                    className="px-4 py-2 text-sm font-medium text-white bg-engage-accent hover:bg-engage-accent/90 rounded-md transition-colors"
-                  >
-                    {role.surveyCompleted ? 'View Report' : 'Complete Survey'}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        </div>
+      )}
+
+      {isReportOpen && selectedRole && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <BenchmarkReport
+              report={onViewReport(selectedRole.id)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }; 
