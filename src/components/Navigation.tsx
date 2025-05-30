@@ -107,7 +107,7 @@ export const Navigation: React.FC<NavigationProps> = ({ user }) => {
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
               <div className="text-gray-300 text-sm">
-                {user.name} ({user.organization})
+                {user.firstName} {user.lastName} ({user.company})
               </div>
             </div>
           </div>
