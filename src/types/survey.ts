@@ -20,6 +20,13 @@ export interface SurveyResponse {
   submittedAt: string;
 }
 
+export interface BenchmarkedRole {
+  id: string;
+  title: string;
+  theme: string;
+  surveyCompleted: boolean;
+}
+
 export interface BenchmarkReport {
   roleId: string;
   title: string;

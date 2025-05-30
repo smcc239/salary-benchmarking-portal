@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { BenchmarkedRole } from '../types/user';
+import { BarChart2, FileText } from 'lucide-react';
 import { SurveyForm } from './SurveyForm';
 import { BenchmarkReport } from './BenchmarkReport';
-import { FileText, BarChart2 } from 'lucide-react';
+import type { BenchmarkedRole, BenchmarkReport as BenchmarkReportType } from '../types/survey';
 
 interface RolesListProps {
   roles: BenchmarkedRole[];
-  onViewReport: (roleId: string) => void;
+  onViewReport: (roleId: string) => BenchmarkReportType;
 }
 
 export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => {
@@ -23,7 +23,7 @@ export const RolesList: React.FC<RolesListProps> = ({ roles, onViewReport }) => 
     }
   };
 
-  const handleSurveyComplete = () => {
+  const handleSurveyComplete = async () => {
     setIsSurveyOpen(false);
     if (selectedRole) {
       setIsReportOpen(true);
