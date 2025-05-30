@@ -1,70 +1,23 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../services/authService';
 import { User } from '../types/user';
 
 interface RegistrationFormProps {
-  onSubmit: (user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
+  onRegister: (user: User) => void;
 }
 
-export const RegistrationForm: React.FC<RegistrationFormProps> = ({
-  onSubmit,
-  onCancel,
-  isLoading = false
-}) => {
+export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    organization: '',
-    role: '',
     password: '',
-    confirmPassword: ''
+    organization: '',
+    role: ''
   });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.organization.trim()) {
-      newErrors.organization = 'Organization is required';
-    }
-
-    if (!formData.role.trim()) {
-      newErrors.role = 'Role is required';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    if (validateForm()) {
-      const { confirmPassword, ...userData } = formData;
-      onSubmit(userData);
-    }
-  };
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,153 +25,134 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const user = await registerUser(formData);
+      onRegister(user);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to register');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Full Name
-        </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          value={formData.name}
-          onChange={handleChange}
-          className={`mt-1 block w-full rounded-md border ${
-            errors.name ? 'border-red-300' : 'border-gray-300'
-          } shadow-sm focus:border-engage-accent focus:ring-engage-accent sm:text-sm`}
-        />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-        )}
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+            Create your account
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-400">
+            Already have an account?{' '}
+            <a href="#" className="font-medium text-engage-accent hover:text-engage-accent/80">
+              Sign in
+            </a>
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="name" className="sr-only">
+                Full name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 rounded-md focus:outline-none focus:ring-engage-accent focus:border-engage-accent focus:z-10 sm:text-sm"
+                placeholder="Full name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 rounded-md focus:outline-none focus:ring-engage-accent focus:border-engage-accent focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="organization" className="sr-only">
+                Organization
+              </label>
+              <input
+                id="organization"
+                name="organization"
+                type="text"
+                required
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 rounded-md focus:outline-none focus:ring-engage-accent focus:border-engage-accent focus:z-10 sm:text-sm"
+                placeholder="Organization"
+                value={formData.organization}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="role" className="sr-only">
+                Role
+              </label>
+              <input
+                id="role"
+                name="role"
+                type="text"
+                required
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 rounded-md focus:outline-none focus:ring-engage-accent focus:border-engage-accent focus:z-10 sm:text-sm"
+                placeholder="Role"
+                value={formData.role}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                className="appearance-none relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 rounded-md focus:outline-none focus:ring-engage-accent focus:border-engage-accent focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email address
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          value={formData.email}
-          onChange={handleChange}
-          className={`mt-1 block w-full rounded-md border ${
-            errors.email ? 'border-red-300' : 'border-gray-300'
-          } shadow-sm focus:border-engage-accent focus:ring-engage-accent sm:text-sm`}
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-        )}
-      </div>
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
 
-      <div>
-        <label htmlFor="organization" className="block text-sm font-medium text-gray-700">
-          Organization
-        </label>
-        <input
-          id="organization"
-          name="organization"
-          type="text"
-          required
-          value={formData.organization}
-          onChange={handleChange}
-          className={`mt-1 block w-full rounded-md border ${
-            errors.organization ? 'border-red-300' : 'border-gray-300'
-          } shadow-sm focus:border-engage-accent focus:ring-engage-accent sm:text-sm`}
-        />
-        {errors.organization && (
-          <p className="mt-1 text-sm text-red-600">{errors.organization}</p>
-        )}
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-engage-accent hover:bg-engage-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-engage-accent disabled:opacity-50"
+            >
+              {isLoading ? 'Creating account...' : 'Create account'}
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-          Role
-        </label>
-        <input
-          id="role"
-          name="role"
-          type="text"
-          required
-          value={formData.role}
-          onChange={handleChange}
-          className={`mt-1 block w-full rounded-md border ${
-            errors.role ? 'border-red-300' : 'border-gray-300'
-          } shadow-sm focus:border-engage-accent focus:ring-engage-accent sm:text-sm`}
-        />
-        {errors.role && (
-          <p className="mt-1 text-sm text-red-600">{errors.role}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          required
-          value={formData.password}
-          onChange={handleChange}
-          className={`mt-1 block w-full rounded-md border ${
-            errors.password ? 'border-red-300' : 'border-gray-300'
-          } shadow-sm focus:border-engage-accent focus:ring-engage-accent sm:text-sm`}
-        />
-        {errors.password && (
-          <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-          Confirm Password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          required
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          className={`mt-1 block w-full rounded-md border ${
-            errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-          } shadow-sm focus:border-engage-accent focus:ring-engage-accent sm:text-sm`}
-        />
-        {errors.confirmPassword && (
-          <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between space-x-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-engage-accent"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-engage-accent hover:bg-engage-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-engage-accent disabled:opacity-50"
-        >
-          {isLoading ? 'Registering...' : 'Register'}
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }; 

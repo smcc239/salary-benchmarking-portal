@@ -1,15 +1,23 @@
 declare module 'react-router-dom' {
-  import * as React from 'react';
+  import { ComponentType, ReactNode } from 'react';
 
-  export interface RouteProps {
+  export interface RouteObject {
+    caseSensitive?: boolean;
+    children?: RouteObject[];
+    element?: ReactNode;
+    index?: boolean;
     path?: string;
-    element?: React.ReactNode;
   }
 
-  export const Route: React.FC<RouteProps>;
-  export const Routes: React.FC<{ children?: React.ReactNode }>;
-  export const Navigate: React.FC<{ to: string; replace?: boolean }>;
-  export const BrowserRouter: React.FC<{ children?: React.ReactNode }>;
-  export const Link: React.FC<{ to: string; className?: string; children?: React.ReactNode }>;
-  export const useLocation: () => { pathname: string };
+  export interface NavigateFunction {
+    (to: string, options?: { replace?: boolean; state?: any }): void;
+  }
+
+  export function useNavigate(): NavigateFunction;
+
+  export const Routes: ComponentType<{ children?: ReactNode }>;
+  export const Route: ComponentType<RouteObject>;
+  export const Navigate: ComponentType<{ to: string; replace?: boolean }>;
+  export const Link: ComponentType<{ to: string; className?: string; children?: ReactNode }>;
+  export const BrowserRouter: ComponentType<{ children?: ReactNode }>;
 } 
