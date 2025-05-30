@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Navigation } from './Navigation';
 import { Breadcrumb } from './Breadcrumb';
 import { User } from '../types/user';
 
 interface LayoutProps {
   user: User;
-  children?: ReactNode;
+  children?: any;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ user, children }) => {
