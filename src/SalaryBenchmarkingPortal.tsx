@@ -86,12 +86,21 @@ const SalaryBenchmarkingPortal: React.FC = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [roles, setRoles] = useState<BenchmarkedRole[]>([mockRole]);
 
   // Database state for local caching
   const [database, setDatabase] = useState<DatabaseState>({
     surveys: [],
     reports: {}
   });
+
+  const handleViewReport = (roleId: string): BenchmarkReport => {
+    const role = roles.find(r => r.roleId === roleId);
+    if (!role) {
+      throw new Error(`Role with ID ${roleId} not found`);
+    }
+    return generateReport(role.roleId, role.title, role.theme);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
