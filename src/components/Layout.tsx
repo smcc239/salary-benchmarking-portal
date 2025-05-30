@@ -16,7 +16,9 @@ export const Layout: React.FC<LayoutProps> = ({ user, children }) => {
         <div className="mb-6">
           <Breadcrumb />
         </div>
-        {children}
+        <div>
+          {children}
+        </div>
       </main>
     </div>
   );
