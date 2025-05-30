@@ -9,6 +9,11 @@ import { SurveyResponse, BenchmarkReport } from './types/survey';
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase configuration. Please check your environment variables.');
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Shared constants
