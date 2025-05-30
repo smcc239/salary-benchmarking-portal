@@ -8,9 +8,10 @@ import { User } from './types/user';
 // Mock user for development
 const mockUser: User = {
   id: '1',
-  name: 'John Doe',
+  firstName: 'John',
+  lastName: 'Doe',
   email: 'john@example.com',
-  organization: 'Acme Corp',
+  company: 'Acme Corp',
   role: 'HR Manager',
   password: 'password123',
   createdAt: new Date().toISOString(),
