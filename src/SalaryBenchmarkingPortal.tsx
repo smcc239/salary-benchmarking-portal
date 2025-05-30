@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { generateReport } from './services/reportService';
 import { User, BenchmarkedRole } from './types/user';
 import { SurveyResponse, BenchmarkReport } from './types/survey';
+import { JobTheme } from './types/job';
 
 // Supabase client setup
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -46,6 +47,29 @@ interface FilterOptions {
   salaryRange: string;
   region: string;
 }
+
+const mockRole: BenchmarkedRole = {
+  roleId: '1',
+  title: 'Software Engineer',
+  theme: 'technology' as JobTheme,
+  averageSalary: 65000,
+  salaryRange: {
+    min: 45000,
+    max: 85000,
+    median: 65000
+  },
+  requirements: ['Bachelor\'s degree', '3+ years experience'],
+  responsibilities: ['Develop software', 'Code review'],
+  skills: ['JavaScript', 'React', 'Node.js'],
+  experience: '3-5 years',
+  education: 'Bachelor\'s',
+  location: 'London',
+  organizationType: 'Charity',
+  organizationSize: '11-50 employees',
+  industry: 'Technology',
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01'
+};
 
 const SalaryBenchmarkingPortal: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);

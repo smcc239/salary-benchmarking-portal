@@ -1,23 +1,34 @@
+import { JobTheme } from './job';
+
 export interface User {
   id: string;
-  name: string;
   email: string;
-  company: string;
+  name: string;
+  organization: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type JobTheme = 
-  | 'Chief Officer'
-  | 'Communications'
-  | 'Corporate Services'
-  | 'Human Resources'
-  | 'Income Generation'
-  | 'Operations'
-  | 'Service Delivery';
-
 export interface BenchmarkedRole {
-  id: string;
+  roleId: string;
   title: string;
   theme: JobTheme;
-  surveyCompleted: boolean;
-  lastUpdated: string;
+  averageSalary: number;
+  salaryRange: {
+    min: number;
+    max: number;
+    median: number;
+  };
+  requirements: string[];
+  responsibilities: string[];
+  skills: string[];
+  experience: string;
+  education: string;
+  location: string;
+  organizationType: string;
+  organizationSize: string;
+  industry: string;
+  createdAt: string;
+  updatedAt: string;
 } 
