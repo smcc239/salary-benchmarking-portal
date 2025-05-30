@@ -1,160 +1,60 @@
 import React, { useState } from 'react';
-import { Dashboard } from './components/Dashboard';
-import type { User, BenchmarkedRole } from './types/user';
-import { BenchmarkReport } from './types/survey';
-import { generateReport } from './services/reportService';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { LoginForm } from './components/LoginForm';
+import { User } from './types/user';
 
-const App: React.FC = () => {
+// Mock user for development
+const mockUser: User = {
+  id: '1',
+  name: 'John Doe',
+  email: 'john@example.com',
+  organization: 'Acme Corp',
+  role: 'HR Manager',
+  password: 'password123',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+};
+
+export const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [roles, setRoles] = useState<BenchmarkedRole[]>([]);
 
-  const handleLogout = () => {
-    setUser(null);
-  };
-
-  const handleImportData = (data: any) => {
-    // Process imported data and update roles
-    console.log('Imported data:', data);
-  };
-
-  const handleViewReport = (roleId: string): BenchmarkReport => {
-    const role = roles.find(r => r.roleId === roleId);
-    if (!role) {
-      throw new Error(`Role with ID ${roleId} not found`);
-    }
-    return generateReport(role.roleId, role.title, role.theme);
+  const handleLogin = (loggedInUser: User) => {
+    setUser(loggedInUser);
   };
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-engage-dark flex items-center justify-center">
-        <div className="max-w-md w-full space-y-8 p-8">
-          <div className="text-center">
-            <img
-              src="https://engageexec.co.uk/wp-content/themes/html5blank/img/nav/main-logo.png"
-              alt="Engage Executive Talent"
-              className="mx-auto h-12 w-auto"
-            />
-            <h2 className="mt-6 text-3xl font-bold text-white">
-              Salary Benchmarking Portal
-            </h2>
-            <p className="mt-2 text-sm text-gray-400">
-              Sign in to access the benchmarking portal
-            </p>
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Salary Benchmarking Portal
+          </h2>
+        </div>
+
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <LoginForm onLogin={handleLogin} />
           </div>
-
-          <form className="mt-8 space-y-6" onSubmit={(e) => {
-            e.preventDefault();
-            // For demo purposes, create a mock user
-            setUser({
-              id: '1',
-              name: 'Demo User',
-              email: 'demo@example.com',
-              organization: 'Demo Company',
-              role: 'Admin',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            });
-            // Add some mock roles
-            setRoles([
-              {
-                roleId: '1',
-                title: 'Chief Technology Officer',
-                theme: 'technology',
-                averageSalary: 120000,
-                salaryRange: {
-                  min: 100000,
-                  max: 150000,
-                  median: 120000
-                },
-                requirements: ['10+ years experience', 'Leadership skills'],
-                responsibilities: ['Technology strategy', 'Team management'],
-                skills: ['Leadership', 'Strategic Planning'],
-                experience: '10+ years',
-                education: 'Bachelor\'s',
-                location: 'London',
-                organizationType: 'Charity',
-                organizationSize: '51-100 employees',
-                industry: 'Technology',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                surveyCompleted: false
-              },
-              {
-                roleId: '2',
-                title: 'Head of HR',
-                theme: 'human-resources',
-                averageSalary: 90000,
-                salaryRange: {
-                  min: 75000,
-                  max: 110000,
-                  median: 90000
-                },
-                requirements: ['8+ years HR experience', 'CIPD qualified'],
-                responsibilities: ['HR strategy', 'Employee relations'],
-                skills: ['HR Management', 'Employee Relations'],
-                experience: '8+ years',
-                education: 'Bachelor\'s',
-                location: 'London',
-                organizationType: 'Charity',
-                organizationSize: '51-100 employees',
-                industry: 'Human Resources',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                surveyCompleted: true
-              }
-            ]);
-          }}>
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-engage-accent focus:border-transparent"
-                placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-engage-accent focus:border-transparent"
-                placeholder="Password"
-              />
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-engage-accent hover:bg-engage-accent/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-engage-accent"
-              >
-                Sign in
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     );
   }
 
   return (
-    <Dashboard
-      user={user}
-      roles={roles}
-      onLogout={handleLogout}
-      onImportData={handleImportData}
-      onViewReport={handleViewReport}
-    />
+    <Router>
+      <Layout user={user}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/roles" replace />} />
+          <Route path="/roles" element={<div>Job Roles</div>} />
+          <Route path="/roles/themes" element={<div>Job Themes</div>} />
+          <Route path="/roles/single" element={<div>Single Job</div>} />
+          <Route path="/reports" element={<div>Reports</div>} />
+          <Route path="/reports/single" element={<div>Single Reports</div>} />
+          <Route path="/profile" element={<div>Profile</div>} />
+          <Route path="/profile/settings" element={<div>Profile Settings</div>} />
+        </Routes>
+      </Layout>
+    </Router>
   );
-};
-
-export default App; 
+}; 

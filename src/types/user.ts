@@ -6,6 +6,7 @@ export interface User {
   name: string;
   organization: string;
   role: string;
+  password: string;
   createdAt: string;
   updatedAt: string;
 }
