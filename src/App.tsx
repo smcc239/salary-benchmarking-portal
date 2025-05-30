@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { LoginForm } from './components/LoginForm';
 import { User } from './types/user';
@@ -16,7 +16,7 @@ const mockUser: User = {
   updatedAt: new Date().toISOString()
 };
 
-export const App: React.FC = () => {
+const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const handleLogin = (loggedInUser: User) => {
@@ -41,20 +41,26 @@ export const App: React.FC = () => {
     );
   }
 
-  return (
-    <Router>
-      <Layout user={user}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/roles" replace />} />
-          <Route path="/roles" element={<div>Job Roles</div>} />
-          <Route path="/roles/themes" element={<div>Job Themes</div>} />
-          <Route path="/roles/single" element={<div>Single Job</div>} />
-          <Route path="/reports" element={<div>Reports</div>} />
-          <Route path="/reports/single" element={<div>Single Reports</div>} />
-          <Route path="/profile" element={<div>Profile</div>} />
-          <Route path="/profile/settings" element={<div>Profile Settings</div>} />
-        </Routes>
-      </Layout>
-    </Router>
+  const routes = (
+    <Routes>
+      <Route path="/" element={<Navigate to="/roles" replace />} />
+      <Route path="/roles" element={<div>Job Roles</div>} />
+      <Route path="/roles/themes" element={<div>Job Themes</div>} />
+      <Route path="/roles/single" element={<div>Single Job</div>} />
+      <Route path="/reports" element={<div>Reports</div>} />
+      <Route path="/reports/single" element={<div>Single Reports</div>} />
+      <Route path="/profile" element={<div>Profile</div>} />
+      <Route path="/profile/settings" element={<div>Profile Settings</div>} />
+    </Routes>
   );
-}; 
+
+  return (
+    <BrowserRouter>
+      <Layout user={user}>
+        {routes}
+      </Layout>
+    </BrowserRouter>
+  );
+};
+
+export default App; 
