@@ -3,8 +3,9 @@ import { JobTheme } from './job';
 export interface User {
   id: string;
   email: string;
-  name: string;
-  organization: string;
+  firstName: string;
+  lastName: string;
+  company: string;
   role: string;
   password: string;
   createdAt: string;
