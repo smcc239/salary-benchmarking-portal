@@ -1,5 +1,5 @@
 import { SurveyResponse, BenchmarkReport } from '../types/survey';
-import { JobTheme } from '../types/user';
+import { JobTheme } from '../types/job';
 
 export const generateBenchmarkReport = (
   title: string,
@@ -50,7 +50,7 @@ export const generateBenchmarkReport = (
   };
 };
 
-export const generateMockBenchmarkReport = (roleId: string, roleTitle: string, theme: string): BenchmarkReport => {
+export const generateMockBenchmarkReport = (roleId: string, roleTitle: string, theme: JobTheme): BenchmarkReport => {
   // This is a mock implementation. In a real application, this would use actual survey data
   return {
     roleId,
