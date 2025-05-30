@@ -24,6 +24,10 @@ export interface CompensationData {
 export interface JobRole {
   id: string;
   title: string;
+  theme: {
+    id: string;
+    name: string;
+  };
   compensation: CompensationData;
   requirements: string[];
   responsibilities: string[];

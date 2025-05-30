@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Profile } from './components/Profile';
 
 type AppRoutesProps = Record<string, never>;
 
@@ -12,8 +13,8 @@ const AppRoutes: React.FC<AppRoutesProps> = () => {
       <Route path="/roles/single" element={<div>Single Job</div>} />
       <Route path="/reports" element={<div>Reports</div>} />
       <Route path="/reports/single" element={<div>Single Reports</div>} />
-      <Route path="/profile" element={<div>Profile</div>} />
-      <Route path="/profile/settings" element={<div>Profile Settings</div>} />
+      <Route path="/profile" element={<Profile user={mockUser} />} />
+      <Route path="/profile/settings" element={<Profile user={mockUser} />} />
     </Routes>
   );
 };

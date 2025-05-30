@@ -1,4 +1,4 @@
-import { JobTheme } from '../types/job';
+import { JobTheme, JobRole } from '../types/job';
 import { sampleUsers, jobThemes } from '../data/sampleData';
 
 interface SurveyData {
@@ -43,12 +43,87 @@ export const submitSurvey = async (surveyData: SurveyData): Promise<void> => {
 };
 
 export const getJobThemes = async (): Promise<JobTheme[]> => {
-  // In a real application, this would fetch from a backend
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(jobThemes);
-    }, 500);
-  });
+  // In a real application, this would fetch from an API
+  return [
+    {
+      id: 'tech',
+      name: 'Technology',
+      description: 'Technology and software development roles',
+      roles: [
+        {
+          id: 'swe',
+          title: 'Software Engineer',
+          theme: {
+            id: 'tech',
+            name: 'Technology'
+          },
+          compensation: {
+            baseSalary: {
+              min: 80000,
+              max: 150000,
+              median: 115000,
+              average: 120000,
+              midPoint: 115000
+            },
+            pension: {
+              min: 4000,
+              max: 7500,
+              median: 5750,
+              average: 6000,
+              midPoint: 5750
+            },
+            totalCompensation: {
+              min: 84000,
+              max: 157500,
+              median: 120750,
+              average: 126000,
+              midPoint: 120750
+            },
+            annualBonus: {
+              min: 8000,
+              max: 15000,
+              median: 11500,
+              average: 12000,
+              midPoint: 11500
+            },
+            overtimeEarnings: {
+              min: 0,
+              max: 15000,
+              median: 5000,
+              average: 6000,
+              midPoint: 5000
+            }
+          },
+          requirements: [
+            'Bachelor\'s degree in Computer Science or related field',
+            '3+ years of software development experience',
+            'Strong knowledge of data structures and algorithms'
+          ],
+          responsibilities: [
+            'Design and implement software solutions',
+            'Write clean, maintainable, and efficient code',
+            'Collaborate with cross-functional teams'
+          ],
+          skills: [
+            'JavaScript/TypeScript',
+            'React',
+            'Node.js',
+            'SQL',
+            'Git'
+          ],
+          experience: '3-5 years',
+          education: 'Bachelor\'s degree',
+          location: 'Remote',
+          organizationType: 'Technology',
+          organizationSize: '1000+',
+          industry: 'Technology',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          surveyCompleted: false
+        }
+      ]
+    }
+  ];
 };
 
 export const getBenchmarkData = async (roleId: string): Promise<JobTheme | null> => {
